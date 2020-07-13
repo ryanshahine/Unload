@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"><!-- Bootstrap CSS -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://wzrd.in/standalone/buffer@latest">
+	</script>
+	<script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js">
+	</script>
+	<script type="text/javascript">
+
+	   function upload() {
+	       document.getElementById("loading").innerHTML = `<p>Uploading...<\/p>`
+	     const reader = new FileReader();
+	     reader.onloadend = function() {
+	       const ipfs = window.IpfsApi('NODE', PORT) // Connect to IPFS
+	       const buf = buffer.Buffer(reader.result) // Convert data into buffer
+	       ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+	          if(err) {
+	           console.error(err)
+	           return
+	         } 
+
+	         let url = `https://ipfs.io/ipfs/${result[0].hash}`
+	       console.log(`Url --> ${url}`)
+	     //    document.getElementById("url").innerHTML= url
+	       //  document.getElementById("url").href= url
+	       //   document.getElementById("output").src = url
+	       document.getElementById("loading").innerHTML = ` `
+	         document.getElementById("results").innerHTML = `<p>Succesfully uploaded!<\/p> <a target="_blank" id="url" class="card card-body" href="${url}">${url}<\/a>
+	`
+	      })
+	  }
+	     const photo = document.getElementById("photo");
+	     reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
+	   }
+
+	   
+	</script>
+	<title>Unload - IPFS File Uploader</title>
+</head>
+<body>
+	<nav class="navbar navbar-light bg-light">
+		<a class="navbar-brand" href="#"><img alt="" class="d-inline-block align-top" height="30" src="https://openmoji.org/data/black/svg/2601.svg" width="30"> Unload</a> <!-- <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Insert IPFS Hash" aria-label="Search" style="width:25em;">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Find</button>
+      </form>-->
+		 <a class="btn btn-outline-secondary my-2 my-sm-0" href="https://ipfs.io" target="_blank" type="submit">Learn about IPFS</a>
+	</nav>
+	<section class="jumbotron text-center vh-100">
+		<div class="container">
+			<h1>Upload your file.</h1>
+			<p class="lead text-muted">Up to 1GB. It's free, forever.</p><input class="my-4" id="photo" name="photo" type="file"> <button class="btn btn-success" onclick="upload()" type="button">Upload</button>
+			<div id="loading"></div>
+			<div id="results"></div>
+			<div class="small my-4">
+				Unload is powered by IPFS. Read about it <a href="https://ipfs.io" target="_blank">here</a>.
+			</div>
+			<div id="test"></div>
+		</div>
+	</section>
+	<script>
+
+	// onload info
+	let xhr = new XMLHttpRequest();
+	// xhr.open('post', 'http://NODE:PORT/api/v0/stats/bw');
+	xhr.open('post', 'http://NODE:PORT/api/v0/stats/bw');
+	xhr.send();
+	xhr.onload = function() {
+	//   console.log(xhr.response);
+	   document.querySelector('#test').innerHTML = xhr.response;
+	};
+
+	// interval info 
+	setInterval(function(){
+	let xhr = new XMLHttpRequest();
+	xhr.open('post', 'http://NODE:PORT/api/v0/stats/bw');
+	xhr.send();
+	xhr.onload = function() {
+	   console.log(xhr.response);
+	   document.querySelector('#test').innerHTML = xhr.response;
+	};
+	}, 2000); 
+
+	</script> <!-- Optional JavaScript -->
+	 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	 
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js">
+	</script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js">
+	</script> 
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js">
+	</script>
+</body>
+</html>
